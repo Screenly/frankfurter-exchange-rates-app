@@ -296,9 +296,25 @@
     }
   }
 
+  /*
+   * Where nothing may move, a line too long is shrunk rather than carried, so
+   * it drops out of the size WCAG counts as large and asks 3:1 of. The two
+   * quieter tones strengthen to the 4.5:1 it asks below that, for as long as
+   * this is the condition the screen is in.
+   */
   @media (prefers-reduced-motion: reduce) {
     .is-scrolling .scroller {
       animation: none;
+    }
+
+    :root,
+    :root[data-theme='dark'] {
+      --label-3: rgba(235, 235, 245, 0.52);
+    }
+
+    :root[data-theme='light'] {
+      --label-2: rgba(60, 60, 67, 0.74);
+      --label-3: rgba(60, 60, 67, 0.74);
     }
   }
 

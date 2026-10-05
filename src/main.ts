@@ -339,6 +339,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       await update()
     } catch (error) {
       console.error('Could not show the rates', error)
+      // Forgotten, not kept: a resize redraws whatever is held here, and the
+      // board it held was fetched for settings that have since failed. It
+      // would come back over the message and read as the current rates.
+      shown = null
       if (showsErrors()) {
         renderFailure(error)
         announce()

@@ -15,6 +15,8 @@ import { readFileSync } from 'node:fs'
 const STYLESHEET = readFileSync(new URL('./style.css', import.meta.url), 'utf8')
 
 const LARGE_TEXT_CONTRAST = 3
+/** What WCAG asks of text below the large size. */
+const SMALL_TEXT_CONTRAST = 4.5
 /** Where the large text rule begins. A point above it leaves room to round. */
 const SMALLEST_SIZE = 25
 
@@ -135,6 +137,56 @@ describe.each(['dark', 'light'])('the %s palette', (theme) => {
  * scrolled across its box rather than shrunk past it, so these floors are what
  * keeps every tone in the range the 3:1 above is allowed at.
  */
+/**
+ * Where the screen asks for no motion, a line too long is shrunk instead of
+ * carried, which takes it under the size the 3:1 above is allowed at. The
+ * stylesheet strengthens the quieter tones for that case, and this is the
+ * check that the strengthened ones are enough.
+ */
+describe('the palette a screen that asks for no motion gets', () => {
+  const media = STYLESHEET.match(
+    /@media \(prefers-reduced-motion: reduce\) \{([\s\S]*?)\n {2}\}\n/,
+  )
+
+  test('there is one', () => {
+    expect(media).not.toBeNull()
+  })
+
+  /** What the media block overrides for one theme, and only that theme. */
+  const overridesFor = (theme: string): Record<string, Colour> => {
+    const body = media?.[1] ?? ''
+    const pattern =
+      theme === 'dark'
+        ? /:root,\s*:root\[data-theme='dark'\] \{([^}]*)\}/
+        : new RegExp(`:root\\[data-theme='${theme}'\\] \\{([^}]*)\\}`)
+    const found = body.match(pattern)
+
+    const tokens: Record<string, Colour> = {}
+    for (const [, name, value] of (found?.[1] ?? '').matchAll(
+      /--([a-z0-9-]+):\s*([^;]+);/g,
+    )) {
+      const colour = parseColour(value!)
+      if (colour) {
+        tokens[name!] = colour
+      }
+    }
+    return tokens
+  }
+
+  test.each(['dark', 'light'])('%s reads at the stricter ratio', (theme) => {
+    const tokens = { ...tokensFor(theme), ...overridesFor(theme) }
+
+    for (const backdrop of [tokens.bg!, tokens.card!]) {
+      for (const name of ['label', 'label-2', 'label-3']) {
+        const ratio = contrast(over(tokens[name]!, backdrop), backdrop)
+        expect(ratio, `--${name} on ${theme}`).toBeGreaterThanOrEqual(
+          SMALL_TEXT_CONTRAST,
+        )
+      }
+    }
+  })
+})
+
 describe('the floors the text fitter stops at', () => {
   const PANELS = readFileSync(new URL('./panels.ts', import.meta.url), 'utf8')
 

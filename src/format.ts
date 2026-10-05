@@ -6,14 +6,27 @@
  * and none on a rate in the thousands, where the last digits are noise.
  */
 
-/** Decimals for a rate of this size, following how the trade quotes them. */
+/**
+ * However many decimals it takes to show a rate, never more than it is worth.
+ *
+ * Four decimals is the trade's habit and it holds down to about a hundredth,
+ * below which it stops being precision and starts being a lie: a board based
+ * on the dong buys 0.000039 dollars, and four decimals writes that as 0.0000.
+ * Under one, the count grows with the leading zeroes so that four figures of
+ * the rate always survive.
+ */
+const MOST_DECIMALS = 10
+
 export function decimalsFor(rate: number): number {
   const size = Math.abs(rate)
 
   if (size >= 1000) return 0
   if (size >= 100) return 2
   if (size >= 10) return 3
-  return 4
+  if (size >= 1 || size === 0) return 4
+
+  const leadingZeroes = Math.floor(-Math.log10(size))
+  return Math.min(4 + leadingZeroes, MOST_DECIMALS)
 }
 
 export function formatRate(rate: number, locale: string): string {

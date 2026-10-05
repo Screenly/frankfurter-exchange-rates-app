@@ -22,6 +22,32 @@ describe('writing a rate', () => {
     expect(decimalsFor(20132)).toBe(0)
   })
 
+  test('a rate worth very little is still worth something', () => {
+    // A board based on the dong buys 0.000039 dollars. Four decimals, the
+    // trade's habit, writes that as 0.0000 and says the dollar is free.
+    expect(formatRate(0.000039, EN)).toBe('0.00003900')
+    expect(formatRate(0.000029, EN)).toBe('0.00002900')
+    expect(formatRate(0.00609, EN)).toBe('0.006090')
+  })
+
+  test('no rate the API quotes is ever written as nothing', () => {
+    // Every rate from a dong, rupiah or rial base lives down here.
+    for (let power = 0; power <= 7; power += 1) {
+      for (const digit of [1, 3, 9]) {
+        const rate = digit / 10 ** power
+        expect(
+          Number(formatRate(rate, 'en-US').replace(/,/g, '')),
+        ).toBeGreaterThan(0)
+      }
+    }
+  })
+
+  test('and the sizes above it are written as they always were', () => {
+    expect(formatRate(0.8501, EN)).toBe('0.8501')
+    expect(formatRate(1.1249, EN)).toBe('1.1249')
+    expect(formatRate(177.62, EN)).toBe('177.62')
+  })
+
   test('the rupiah does not carry four decimals and the dollar does', () => {
     expect(formatRate(1.1249, EN)).toBe('1.1249')
     expect(formatRate(177.62, EN)).toBe('177.62')

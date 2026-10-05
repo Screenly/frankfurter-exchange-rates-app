@@ -15,6 +15,21 @@
 /** Reference pixels a second. Slow enough to read a name as it goes past. */
 const SCROLL_SPEED = 55
 
+/**
+ * The floor a line may shrink to where it is not allowed to travel.
+ *
+ * Carrying the line is what lets everything else stay at a size the quieter
+ * greys are readable at. Take the motion away and something has to give, so
+ * the line shrinks instead, and the stylesheet strengthens those greys for as
+ * long as that is true: small and legible beats large and cut in half.
+ */
+const STILL_MIN_SIZE = 16
+
+/** Whether this screen is willing to have anything move on it. */
+function carriesMotion(): boolean {
+  return !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+}
+
 /** However short the overrun, a glance should not miss the whole trip. */
 const MIN_TRAVEL_SECONDS = 5
 
@@ -73,19 +88,22 @@ export function fitToWidth(element: HTMLElement, minFontSize: number): void {
     return
   }
 
+  const moves = carriesMotion()
+  const floor = moves ? minFontSize : Math.min(minFontSize, STILL_MIN_SIZE)
+
   let size = Math.max(
-    minFontSize,
+    floor,
     Math.floor((maxFontSize * available) / element.scrollWidth),
   )
   element.style.fontSize = `${size}px`
 
-  while (size > minFontSize && element.scrollWidth > available) {
+  while (size > floor && element.scrollWidth > available) {
     size -= 1
     element.style.fontSize = `${size}px`
   }
 
   // Still over at the smallest size it is allowed to be, so it travels.
-  if (element.scrollWidth > available) {
+  if (moves && element.scrollWidth > available) {
     startScrolling(element, available)
   }
 }

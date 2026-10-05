@@ -206,16 +206,28 @@ export function fitDynamicText(): void {
 }
 
 /**
- * What the screen says when the app could not start or could not reach the
- * rates with nothing cached to fall back on. An operator needs to see that
- * something is wrong, not a board that happens to be empty.
+ * What the screen says when it cannot draw the board and has nothing saved.
+ *
+ * The masthead goes with it. A failure that follows a good render would
+ * otherwise keep the old base, the day those rates were published and the
+ * trend window sitting above the message, which reads as though the figures
+ * below are still being quoted and are merely late.
  */
 export function renderFailure(error: unknown): void {
   const reason = error instanceof Error ? error.message : String(error)
 
+  for (const selector of [
+    '[data-base-amount]',
+    '[data-base-name]',
+    '[data-asof-date]',
+    '[data-asof-note]',
+  ]) {
+    element<HTMLElement>(selector).textContent = ''
+  }
+
   element<HTMLElement>('[data-board]').innerHTML = `
     <div class="empty">
-      <div class="empty-title">Frankfurter Exchange Rates could not start</div>
+      <div class="empty-title">No rates to show</div>
       <div class="empty-hint">${escapeText(reason)}</div>
     </div>
   `

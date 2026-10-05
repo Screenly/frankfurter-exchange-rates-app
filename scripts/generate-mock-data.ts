@@ -1,9 +1,11 @@
 /**
  * Writes the `mock-data.yml` the dev server reads in place of a real player.
  *
- * A bureau in Frankfurt quoting the dollar, with six currencies: enough to see
- * the grid pick three columns, and a mix of rates near one, in the hundreds,
- * and in between, which is what the decimal rule is there for.
+ * A hotel in Frankfurt quoting its guests' currencies against the dollar, with
+ * six of them: enough to see the grid pick three columns, and a mix of rates
+ * near one, in the hundreds, and in between, which is what the decimal rule is
+ * there for. The direction is written out rather than left to the default, so
+ * that the board the fixture describes is the board it produces.
  *
  * An existing file is left alone unless `--force` is passed.
  */
@@ -27,6 +29,7 @@ metadata:
 settings:
   board_title: ''
   base_currency: USD
+  rate_direction: buys
   quote_currencies: EUR,GBP,JPY,CHF,CNY,AUD
   amount: '1'
   trend_days: '30'
@@ -39,5 +42,5 @@ if (fs.existsSync(MOCK_DATA_PATH) && !process.argv.includes('--force')) {
   )
 } else {
   fs.writeFileSync(MOCK_DATA_PATH, BUREAU)
-  console.log('Wrote mock-data.yml for a bureau in Frankfurt')
+  console.log('Wrote mock-data.yml for a hotel in Frankfurt')
 }
