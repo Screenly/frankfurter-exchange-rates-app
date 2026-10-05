@@ -64,6 +64,22 @@ describe('writing a rate', () => {
     expect(formatAmount(100, EN)).toBe('100')
     expect(formatAmount(2.5, EN)).toBe('2.5')
   })
+
+  test('an amount small enough to vanish does not', () => {
+    // The masthead read "0 USD" while every card was worked out for the
+    // amount that had been set, so the board misstated what it was quoting.
+    expect(formatAmount(0.00001, EN)).toBe('0.00001')
+    expect(formatAmount(0.0005, EN)).toBe('0.0005')
+  })
+
+  test('every amount the settings accept survives being written', () => {
+    for (let power = 0; power <= 7; power += 1) {
+      for (const digit of [1, 5, 9]) {
+        const amount = digit / 10 ** power
+        expect(Number(formatAmount(amount, 'en-US'))).toBeGreaterThan(0)
+      }
+    }
+  })
 })
 
 describe('writing a change', () => {

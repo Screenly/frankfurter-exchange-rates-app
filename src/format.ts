@@ -38,11 +38,18 @@ export function formatRate(rate: number, locale: string): string {
   }).format(rate)
 }
 
-/** The amount in the masthead: "1", "100", "2.5". No trailing zeroes. */
+/**
+ * The amount in the masthead: "1", "100", "2.5". No trailing zeroes.
+ *
+ * It takes the same decimals a rate of its size would, so that an amount small
+ * enough to be written away is not: four decimals turned an amount of 0.00001
+ * into a masthead reading "0 USD" while every card was still worked out for
+ * the amount that was set.
+ */
 export function formatAmount(amount: number, locale: string): string {
-  return new Intl.NumberFormat(locale, { maximumFractionDigits: 4 }).format(
-    amount,
-  )
+  return new Intl.NumberFormat(locale, {
+    maximumFractionDigits: Math.max(4, decimalsFor(amount)),
+  }).format(amount)
 }
 
 /** "+1.42%", "-0.31%", "0.00%". Always signed, so the eye can skip the arrow. */
