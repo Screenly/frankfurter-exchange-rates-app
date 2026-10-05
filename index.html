@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Frankfurter Exchange Rates - Screenly Edge App</title>
+    <script src="screenly.js?version=1"></script>
+  </head>
+  <body>
+    <auto-scaler
+      reference-width="1920"
+      reference-height="1080"
+      orientation="auto"
+      padding="0"
+    >
+      <div id="app">
+        <header class="masthead">
+          <div class="base">
+            <div class="eyebrow" data-heading>&nbsp;</div>
+            <div class="base-amount" data-base-amount>&nbsp;</div>
+            <div class="base-name" data-base-name>&nbsp;</div>
+          </div>
+          <div class="asof">
+            <div class="asof-date" data-asof-date>&nbsp;</div>
+            <div class="asof-note" data-asof-note>&nbsp;</div>
+          </div>
+        </header>
+
+        <main class="board" data-board></main>
+
+        <footer class="credit">
+          <span data-credit>&nbsp;</span>
+        </footer>
+      </div>
+    </auto-scaler>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

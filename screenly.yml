@@ -1,0 +1,122 @@
+---
+syntax: manifest_v1
+description: Daily currency exchange rates from central banks
+author: Screenly, Inc.
+categories:
+- Finance
+ready_signal: true
+settings:
+  amount:
+    type: string
+    default_value: '1'
+    title: Amount
+    optional: true
+    help_text:
+      properties:
+        help_text: |
+          How much of the base currency each rate is for. Leave it at 1 for
+          "1 EUR buys", or set 100 or 1000 where the base is worth little
+          against the currencies shown.
+        type: number
+        display_order: 40
+      schema_version: 1
+  appearance:
+    type: string
+    default_value: dark
+    title: Appearance
+    optional: true
+    help_text:
+      properties:
+        help_text: |
+          Dark suits a lobby or a bar; light suits a bright hall or a window
+          facing the street.
+        options:
+        - label: Dark
+          value: dark
+        - label: Light
+          value: light
+        - label: Follow account theme
+          value: auto
+        type: select
+        display_order: 60
+      schema_version: 1
+  base_currency:
+    type: string
+    default_value: USD
+    title: Base Currency
+    optional: true
+    help_text:
+      properties:
+        type: string
+        display_order: 10
+        help_text: |
+          The currency everything else is priced against, as a three letter code,
+          e.g. USD, EUR or JPY. The board reads "1 USD buys". Any of the 165
+          currencies the API quotes will do; frankfurter.dev/currencies lists them.
+      schema_version: 1
+  rate_direction:
+    type: string
+    default_value: buys
+    title: Rates Shown As
+    optional: true
+    help_text:
+      properties:
+        type: select
+        display_order: 20
+        help_text: |
+          Which way round the board reads. A bureau quoting its own currency
+          wants the second: "1 USD costs 155.20 JPY".
+        options:
+          - label: What one unit of the base buys
+            value: buys
+          - label: What each currency costs in the base
+            value: costs
+      schema_version: 1
+  quote_currencies:
+    type: string
+    default_value: EUR,GBP,JPY,CHF,CNY,AUD
+    title: Currencies Shown
+    optional: true
+    help_text:
+      properties:
+        type: string
+        display_order: 30
+        help_text: |
+          Three letter codes separated by commas, in the order they should appear,
+          e.g. USD,GBP,JPY,CHF. Up to twelve fit on a screen; the board lays them
+          out and sizes them to the number given. 165 currencies are available.
+      schema_version: 1
+  trend_days:
+    type: string
+    default_value: '30'
+    title: Trend
+    optional: true
+    help_text:
+      properties:
+        help_text: |
+          How far back the line under each rate goes.
+        options:
+        - label: 7 days
+          value: '7'
+        - label: 30 days
+          value: '30'
+        - label: 90 days
+          value: '90'
+        - label: 1 year
+          value: '365'
+        type: select
+        display_order: 50
+      schema_version: 1
+  board_title:
+    type: string
+    default_value: ''
+    title: Heading
+    optional: true
+    help_text:
+      properties:
+        type: string
+        display_order: 70
+        help_text: |
+          The small line above the base currency, e.g. "Today's rates" or the name
+          of the bureau. Defaults to "Exchange rates".
+      schema_version: 1

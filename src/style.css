@@ -1,0 +1,364 @@
+@layer theme, base, utilities;
+
+@import 'tailwindcss/theme.css' layer(theme);
+@import '@screenly/edge-apps/styles' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities);
+
+@layer base {
+  /*
+   * One design in two tones. With no border to draw a card, the one step
+   * between it and the page is the whole of what makes it one: dark lifts the
+   * card off a black page, light sets a white card on a page just off white.
+   *
+   * The greens and reds are the system colours Apple ships for exactly this
+   * job, including the darker pair for light mode: the bright #34c759 reads at
+   * under 2:1 on white and is unusable as text, while it is right on black.
+   */
+  :root,
+  :root[data-theme='dark'] {
+    --bg: #000000;
+    --card: #0b0b0d;
+    --label: #ffffff;
+    --label-2: rgba(235, 235, 245, 0.6);
+    --label-3: rgba(235, 235, 245, 0.4);
+    --up: #30d158;
+    --down: #ff453a;
+    --flat: rgba(235, 235, 245, 0.45);
+  }
+
+  :root[data-theme='light'] {
+    --bg: #fafafc;
+    --card: #ffffff;
+    --label: #000000;
+    --label-2: rgba(60, 60, 67, 0.66);
+    --label-3: rgba(60, 60, 67, 0.58);
+    --up: #248a3d;
+    --down: #d70015;
+    --flat: rgba(60, 60, 67, 0.62);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: var(--bg);
+    color: var(--label);
+    font-feature-settings: 'tnum' 1;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #app {
+    display: flex;
+    height: 100%;
+    width: 100%;
+    flex-direction: column;
+    gap: 40px;
+    padding: 56px 64px 36px;
+  }
+
+  /* What the rates are in, and when they are from */
+
+  .masthead {
+    display: flex;
+    flex: none;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 56px;
+  }
+
+  .base {
+    min-width: 0;
+    flex: 1;
+  }
+
+  .eyebrow {
+    height: 30px;
+    overflow: hidden;
+    color: var(--label-3);
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    line-height: 30px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .base-amount {
+    height: 104px;
+    overflow: hidden;
+    margin-top: 10px;
+    font-size: 92px;
+    font-weight: 600;
+    letter-spacing: -0.035em;
+    line-height: 104px;
+    white-space: nowrap;
+  }
+
+  .base-name {
+    height: 42px;
+    overflow: hidden;
+    color: var(--label-2);
+    font-size: 34px;
+    line-height: 42px;
+    white-space: nowrap;
+  }
+
+  .asof {
+    flex: none;
+    padding-bottom: 6px;
+    text-align: right;
+  }
+
+  .asof-date {
+    font-size: 38px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .asof-note {
+    margin-top: 8px;
+    color: var(--label-3);
+    font-size: 25px;
+  }
+
+  /* The cards */
+
+  .board {
+    display: grid;
+    min-height: 0;
+    flex: 1;
+    gap: 24px;
+    grid-template-columns: repeat(var(--columns, 3), minmax(0, 1fr));
+    /* Rows share the board rather than growing to whatever they hold. */
+    grid-auto-rows: minmax(0, 1fr);
+    /*
+     * The card's own type is a proportion of this, so two across and four
+     * across are the same design at two sizes rather than two designs. It is
+     * measured and written back by the renderer; the value here is only what
+     * the first paint uses before there is a box to measure.
+     */
+    --card-width: 560px;
+  }
+
+  .rate {
+    display: flex;
+    min-width: 0;
+    overflow: hidden;
+    flex-direction: column;
+    justify-content: space-between;
+    border-radius: max(18px, calc(var(--card-width) * 0.05));
+    background: var(--card);
+    padding: var(--pad) var(--pad) 0;
+    --pad: max(16px, calc(var(--card-width) * 0.055));
+    --trend: var(--flat);
+  }
+
+  .rate[data-direction='up'] {
+    --trend: var(--up);
+  }
+
+  .rate[data-direction='down'] {
+    --trend: var(--down);
+  }
+
+  .rate-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .rate-code {
+    font-size: max(26px, calc(var(--card-width) * 0.085));
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1;
+  }
+
+  .rate-change {
+    color: var(--trend);
+    font-size: max(25px, calc(var(--card-width) * 0.062));
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .rate-arrow {
+    font-size: 0.78em;
+    /* Sits on the digits rather than on the baseline under them. */
+    vertical-align: 0.04em;
+  }
+
+  /*
+   * The name carries the weight the currency's own glyph used to. Most of them
+   * do not have one: the API gives "CHF" as the symbol for the Swiss franc, so
+   * the card read "CHF  CHF 0.8288" and spent a line saying nothing twice.
+   */
+  .rate-name {
+    height: calc(max(25px, calc(var(--card-width) * 0.058)) * 1.25);
+    overflow: hidden;
+    margin-top: max(6px, calc(var(--card-width) * 0.014));
+    color: var(--label-2);
+    font-size: max(25px, calc(var(--card-width) * 0.058));
+    line-height: calc(max(25px, calc(var(--card-width) * 0.058)) * 1.25);
+    white-space: nowrap;
+  }
+
+  .rate-value {
+    margin-top: max(8px, calc(var(--card-width) * 0.028));
+    padding-bottom: max(8px, calc(var(--card-width) * 0.03));
+    font-size: max(34px, calc(var(--card-width) * 0.155));
+    font-weight: 600;
+    letter-spacing: -0.04em;
+    line-height: 1.04;
+    white-space: nowrap;
+  }
+
+  /*
+   * The line runs the full width of the card and off its bottom corners, where
+   * the card's own rounding clips it. Boxed in with a margin it reads as a
+   * small chart someone put on a card; carried to the edges it reads as the
+   * card itself having a shape.
+   */
+  .rate-spark {
+    display: block;
+    height: max(28px, calc(var(--card-width) * 0.17));
+    width: calc(100% + var(--pad) * 2);
+    flex: none;
+    margin: auto calc(var(--pad) * -1) 0;
+    overflow: visible;
+  }
+
+  .spark-line {
+    fill: none;
+    stroke: var(--trend);
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: max(2px, calc(var(--card-width) * 0.0055));
+  }
+
+  /*
+   * A wash under the line rather than a block of colour. The mask fades it out
+   * towards the bottom of the box; where it is not supported the flat fill it
+   * falls back to is the same idea, less softly.
+   */
+  .spark-area {
+    fill: var(--trend);
+    opacity: 0.16;
+    mask-image: linear-gradient(to bottom, #000 8%, transparent 94%);
+  }
+
+  /* A source that has not published today says so instead of pretending. */
+  .rate-stale {
+    color: var(--label-3);
+  }
+
+  .rate-stale::before {
+    content: ' \00b7 ';
+  }
+
+  /*
+   * A line too long for its box at the smallest size it may be drawn at is
+   * carried across instead, the way a music player shows a title that does not
+   * fit. It rests at each end for long enough to be read from the beginning,
+   * which is the difference between this and a ticker.
+   */
+  .scroller {
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .is-scrolling .scroller {
+    animation: scroll-line var(--scroll-duration, 12s) ease-in-out infinite
+      alternate;
+    will-change: transform;
+  }
+
+  @keyframes scroll-line {
+    0%,
+    12% {
+      transform: translateX(0);
+    }
+
+    88%,
+    100% {
+      transform: translateX(var(--scroll-shift, 0));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .is-scrolling .scroller {
+      animation: none;
+    }
+  }
+
+  /* Nothing to show */
+
+  .empty {
+    display: flex;
+    height: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    grid-column: 1 / -1;
+    text-align: center;
+  }
+
+  .empty-title {
+    font-size: 64px;
+    font-weight: 600;
+    letter-spacing: -0.03em;
+  }
+
+  .empty-hint {
+    color: var(--label-2);
+    font-size: 32px;
+    line-height: 1.45;
+  }
+
+  /*
+   * 25px rather than 22. Every other line in this colour is above the 24px
+   * where WCAG starts calling text large and asks 3:1 of it instead of 4.5:1,
+   * and holding the quietest line on the board to the stricter ratio would
+   * have meant lifting the tone everywhere it is used. Three points buys that.
+   */
+  .credit {
+    flex: none;
+    color: var(--label-3);
+    font-size: 25px;
+    text-align: center;
+  }
+
+  @media (orientation: portrait) {
+    #app {
+      gap: 32px;
+      padding: 60px 48px 32px;
+    }
+
+    .masthead {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .asof {
+      padding-bottom: 0;
+      text-align: left;
+    }
+
+    .board {
+      gap: 20px;
+    }
+  }
+}
