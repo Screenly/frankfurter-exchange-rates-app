@@ -94,11 +94,22 @@ export function parseCurrencyCode(text: string): string | null {
   return /^[A-Z]{3}$/.test(code) ? code : null
 }
 
-/** The amount of the base currency each rate is for. Never zero or negative. */
+/**
+ * The amount each rate is for. Never zero or negative, and never the start of
+ * something else: parseFloat reads "12usd" as twelve, which is a board quoting
+ * amounts nobody asked for rather than the one unit it falls back to.
+ */
 export function parseAmount(text: string): number {
-  const amount = Number.parseFloat(text.trim())
+  const amount = Number(text.trim())
   return Number.isFinite(amount) && amount > 0 ? amount : 1
 }
+
+/**
+ * How many currencies a board holds. Past this the cards keep their smallest
+ * readable type inside boxes that go on shrinking, and the overflow is hidden,
+ * so the extra currencies cost the ones already there without being seen.
+ */
+export const MOST_CURRENCIES = 12
 
 function percentChange(from: number, to: number): number | null {
   return from > 0 ? ((to - from) / from) * 100 : null

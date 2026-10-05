@@ -28,11 +28,13 @@ import {
   renderCredit,
   renderFailure,
   renderMasthead,
+  renderNothing,
   type Display,
 } from './panels.js'
 import {
   baseFrom,
   boardFrom,
+  MOST_CURRENCIES,
   parseAmount,
   quotesAgainst,
   type Board,
@@ -67,6 +69,8 @@ interface Settings {
   quotes: string[]
   /** Anything typed into the two currency settings that is not a code. */
   unreadable: string[]
+  /** Codes past what a board holds, named rather than quietly clipped. */
+  omitted: string[]
   /** Show what each currency costs in the base, rather than what it buys. */
   inverted: boolean
   amount: number
@@ -111,7 +115,8 @@ function readSettings(): Settings {
       'Exchange rates',
     base,
     inverted,
-    quotes: quotes.codes,
+    quotes: quotes.codes.slice(0, MOST_CURRENCIES),
+    omitted: quotes.codes.slice(MOST_CURRENCIES),
     // A base that cannot be read falls back to the dollar, which is silent
     // unless the board says so: every rate would be right, and every one of
     // them against a currency nobody asked for.
@@ -171,6 +176,7 @@ function draw({ settings, board, offline, receivedOn }: Shown): void {
     settings.unreadable.length
       ? `Not a currency code: ${settings.unreadable.join(', ')}`
       : '',
+    settings.omitted.length ? `No room for ${settings.omitted.join(', ')}` : '',
   ].filter(Boolean)
   const asOf =
     offline && receivedOn
@@ -346,6 +352,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (showsErrors()) {
         renderFailure(error)
         announce()
+      } else if (announced) {
+        // Already shown once, so standing aside cannot mean staying quiet: the
+        // last good board is still on the screen, and leaving it there quotes
+        // settings that have stopped working as though they were today's.
+        renderNothing()
       }
     }
   }

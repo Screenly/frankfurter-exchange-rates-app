@@ -127,6 +127,14 @@ describe('reading the base currency', () => {
     expect(parseAmount('ten')).toBe(1)
     expect(parseAmount('')).toBe(1)
   })
+
+  test('a number with something after it is not a number', () => {
+    // parseFloat reads the prefix and stops, so these quoted twelve and the
+    // board gave no sign that the rest of the setting had been thrown away.
+    expect(parseAmount('12usd')).toBe(1)
+    expect(parseAmount('12 34')).toBe(1)
+    expect(parseAmount('100%')).toBe(1)
+  })
 })
 
 describe('building the board', () => {

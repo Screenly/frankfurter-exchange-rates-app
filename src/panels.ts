@@ -190,12 +190,49 @@ function layOut(container: HTMLElement, count: number): void {
   container.style.setProperty('--card-width', `${basis.toFixed(1)}px`)
 }
 
+/** Everything in the masthead that describes the rates rather than the screen. */
+function clearMasthead(): void {
+  for (const selector of [
+    '[data-base-amount]',
+    '[data-base-name]',
+    '[data-asof-date]',
+    '[data-asof-note]',
+  ]) {
+    element<HTMLElement>(selector).textContent = ''
+  }
+}
+
 export function renderCredit(text: string): void {
   element('[data-credit]').textContent = text
 }
 
 /** Shrink the lines that take whatever the data gives them. */
+/**
+ * Blank the screen: no board, no masthead, no message.
+ *
+ * For a board told to stand aside that has already shown rates once. It cannot
+ * take back the ready signal, so the most it can do is stop presenting figures
+ * fetched for settings that have since stopped working as though they were
+ * today's.
+ */
+export function renderNothing(): void {
+  clearMasthead()
+  element<HTMLElement>('[data-board]').removeAttribute('style')
+  element<HTMLElement>('[data-board]').innerHTML = ''
+  renderCredit('')
+}
+
 export function fitDynamicText(): void {
+  // The grid as well as the type. Both are measured from a box that
+  // <auto-scaler> may not have sized yet on the first pass, and a layout that
+  // bailed on a box of no width would otherwise keep the stylesheet's fallback
+  // three columns until something else happened to redraw the board.
+  const board = element<HTMLElement>('[data-board]')
+  const cards = board.querySelectorAll('.rate').length
+  if (cards > 0) {
+    layOut(board, cards)
+  }
+
   fitToWidth(element<HTMLElement>('[data-heading]'), HEADING_MIN_SIZE)
   fitToWidth(element<HTMLElement>('[data-base-amount]'), BASE_MIN_SIZE)
   fitToWidth(element<HTMLElement>('[data-base-name]'), NAME_MIN_SIZE)
@@ -216,14 +253,7 @@ export function fitDynamicText(): void {
 export function renderFailure(error: unknown): void {
   const reason = error instanceof Error ? error.message : String(error)
 
-  for (const selector of [
-    '[data-base-amount]',
-    '[data-base-name]',
-    '[data-asof-date]',
-    '[data-asof-note]',
-  ]) {
-    element<HTMLElement>(selector).textContent = ''
-  }
+  clearMasthead()
 
   element<HTMLElement>('[data-board]').innerHTML = `
     <div class="empty">

@@ -58,7 +58,9 @@ that is not a three letter code is named at the foot of the board, as is a code
 the API does not recognise. The base is dropped from its own list without
 comment, since a card reading "USD 1.0000" says nothing.
 
-Up to a dozen fit comfortably. The board measures the room it has and picks the
+Twelve is the most a board shows; anything past that is named at its foot
+rather than quietly clipped, since the cards hold their smallest readable type
+while their boxes keep shrinking. The board measures the room it has and picks the
 grid from it, so the same settings fill a landscape screen four across and a
 portrait one two across, and the type inside a card is a proportion of the card
 rather than a fixed size.
@@ -139,7 +141,12 @@ title too long for the screen: it rests at each end long enough to be read from
 the beginning.
 
 Nothing is drawn below 25px, which is what lets the quieter greys stand at the
-3:1 WCAG asks of large text rather than the 4.5:1 it asks below that. There are no currency glyphs: the API
+3:1 WCAG asks of large text rather than the 4.5:1 it asks below that.
+
+The exception is a screen asking for reduced motion, where a line too long is
+shrunk rather than carried and may reach 16px. The stylesheet strengthens those
+two greys to 4.5:1 inside that media query, so the guarantee holds either way,
+and the contrast test checks that branch as well. There are no currency glyphs: the API
 gives "CHF" as the symbol for the Swiss franc and "$" for four different
 dollars, so the name does that job instead.
 
@@ -151,7 +158,8 @@ bun run dev
 ```
 
 The dev server reads `mock-data.yml`, which `bun run generate-mock-data`
-writes: a bureau in Frankfurt quoting the dollar. Edit it to try other settings,
+writes: a hotel in Frankfurt quoting its guests' currencies against the dollar,
+so `rate_direction` is `buys`. Edit it to try other settings,
 or pass `--force` to write a fresh one. It is gitignored.
 
 ## Tests
