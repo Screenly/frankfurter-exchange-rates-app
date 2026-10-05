@@ -215,6 +215,16 @@ function ledeFor(settings: Settings): string {
     : `${settings.base} per ${amount}`
 }
 
+/**
+ * Whether a board that cannot be drawn says so, or stands aside.
+ *
+ * Read when it is needed rather than with the rest: an operator who sets this
+ * while the screen is sitting on an error wants the next tick to honour it.
+ */
+function showsErrors(): boolean {
+  return getSettingWithDefault<string>('on_error', 'show') !== 'skip'
+}
+
 function cacheKey(settings: Settings): string {
   return `${settings.base}:${settings.quotes.join(',')}:${settings.days}`
 }
@@ -249,9 +259,12 @@ async function load(settings: Settings): Promise<Shown> {
         : []
     const board = build(rows)
 
-    if (board.quotes.length === 0) {
+    // Only an empty board from currencies the API does know is a failure. Ask
+    // for nothing it knows and the board is empty on purpose, with the codes
+    // named at its foot, which is an answer rather than a fault.
+    if (board.quotes.length === 0 && quotes.length > 0) {
       throw new Error(
-        `No rates for ${settings.base} against ${settings.quotes.join(', ')}`,
+        `No rates for ${settings.base} against ${quotes.join(', ')}`,
       )
     }
 
@@ -286,6 +299,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   applyTheme()
 
   let shown: Shown | null = null
+  let announced = false
+
+  /*
+   * The player waits for this before it shows the app, and once is enough.
+   *
+   * It is deliberately not sent until there is something worth showing. On a
+   * board set to stand aside it is never sent at all while the rates are out
+   * of reach, which is what lets the screen move on rather than give its time
+   * to an error nobody in the room can act on.
+   */
+  const announce = () => {
+    if (!announced) {
+      announced = true
+      signalReady()
+    }
+  }
 
   const update = async () => {
     applyTheme()
@@ -302,17 +331,31 @@ document.addEventListener('DOMContentLoaded', async () => {
           }
 
     draw(shown)
+    announce()
   }
 
-  try {
-    await update()
-    setInterval(() => {
-      update().catch((error) => console.error('Could not refresh rates', error))
-    }, REFRESH_MS)
-  } catch (error) {
-    console.error('Failed to start Frankfurter Exchange Rates', error)
-    renderFailure(error)
+  const attempt = async () => {
+    try {
+      await update()
+    } catch (error) {
+      console.error('Could not show the rates', error)
+      if (showsErrors()) {
+        renderFailure(error)
+        announce()
+      }
+    }
   }
+
+  await attempt()
+
+  /*
+   * Registered whatever the first attempt did. A screen that woke during an
+   * outage with nothing cached would otherwise hold its error until someone
+   * noticed and rebooted it, long after the network came back.
+   */
+  setInterval(() => {
+    attempt().catch((error) => console.error('Could not refresh rates', error))
+  }, REFRESH_MS)
 
   let resizeTimer: number | undefined
   window.addEventListener('resize', () => {
@@ -320,6 +363,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Redrawn, not refetched: only the grid depends on the size of the screen.
     resizeTimer = window.setTimeout(() => shown && draw(shown), 150)
   })
-
-  signalReady()
 })

@@ -108,6 +108,26 @@ settings:
         type: select
         display_order: 50
       schema_version: 1
+  on_error:
+    type: string
+    default_value: show
+    title: When Rates Cannot Be Shown
+    optional: true
+    help_text:
+      properties:
+        type: select
+        display_order: 65
+        help_text: |
+          What a screen does when it cannot reach the rates and has none saved.
+          Standing aside gives the time to whatever else is scheduled instead
+          of holding the screen on a message the room cannot act on. Either
+          way the screen keeps trying, and shows the board as soon as it can.
+        options:
+          - label: Show what went wrong
+            value: show
+          - label: Stand aside and let the screen move on
+            value: skip
+      schema_version: 1
   board_title:
     type: string
     default_value: ''

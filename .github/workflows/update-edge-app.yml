@@ -8,11 +8,11 @@ on:
       - development
       - master
 
-run-name: Updating Meal Schedules in ${{ github.event_name == 'workflow_dispatch' && 'stage' || (github.ref == 'refs/heads/master' && 'production' || 'stage') }}
+run-name: Updating Frankfurter Exchange Rates in ${{ github.event_name == 'workflow_dispatch' && 'stage' || (github.ref == 'refs/heads/master' && 'production' || 'stage') }}
 
 jobs:
   deploy-stage:
-    name: Updating Meal Schedules in stage
+    name: Updating Frankfurter Exchange Rates in stage
     runs-on: ubuntu-latest
     if: (github.event_name == 'push' && github.ref == 'refs/heads/development') || github.event_name == 'workflow_dispatch'
     environment: stage
@@ -26,7 +26,7 @@ jobs:
           edge_app_id: ${{ secrets.EDGE_APP_ID || vars.STAGE_EDGE_APP_ID }}
 
   deploy-production:
-    name: Updating Meal Schedules in production
+    name: Updating Frankfurter Exchange Rates in production
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     environment: production

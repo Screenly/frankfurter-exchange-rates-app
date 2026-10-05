@@ -37,15 +37,16 @@ day it last did, so a stale figure says so instead of passing for today's.
 The defaults draw a dollar board with six currencies on it, so a screen shows
 something sensible before anything is set.
 
-| Setting            | What it does                                              | Default                   |
-| ------------------ | --------------------------------------------------------- | ------------------------- |
-| `base_currency`    | What the rates are priced against, as a three letter code | `USD`                     |
-| `rate_direction`   | `buys`, or `costs` for the other way round                | `buys`                    |
-| `quote_currencies` | Which currencies to show, in the order they should appear | `EUR,GBP,JPY,CHF,CNY,AUD` |
-| `amount`           | How much of the base each rate is for                     | `1`                       |
-| `trend_days`       | How far back the line goes: 7, 30, 90 days or a year      | `30`                      |
-| `appearance`       | `dark`, `light`, or `auto` to follow the account theme    | `dark`                    |
-| `board_title`      | The line above the base currency                          | `Exchange rates`          |
+| Setting            | What it does                                                   | Default                   |
+| ------------------ | -------------------------------------------------------------- | ------------------------- |
+| `base_currency`    | What the rates are priced against, as a three letter code      | `USD`                     |
+| `rate_direction`   | `buys`, or `costs` for the other way round                     | `buys`                    |
+| `quote_currencies` | Which currencies to show, in the order they should appear      | `EUR,GBP,JPY,CHF,CNY,AUD` |
+| `amount`           | Units each rate is for: of the base, or of the card's currency | `1`                       |
+| `trend_days`       | How far back the line goes: 7, 30, 90 days or a year           | `30`                      |
+| `appearance`       | `dark`, `light`, or `auto` to follow the account theme         | `dark`                    |
+| `on_error`         | `show` what went wrong, or `skip` and let the screen move on   | `show`                    |
+| `board_title`      | The line above the base currency                               | `Exchange rates`          |
 
 Any of the 165 currencies the API quotes can be the base or appear against it.
 Codes are typed rather than picked from a list: a Screenly setting carries at
@@ -53,9 +54,9 @@ most 1024 characters of help text, which is around 26 options, and a list that
 left out 139 currencies would be worse than a field that accepts all of them.
 
 Codes can be in any case, separated by commas, spaces or new lines. Anything
-that is not a three letter code is ignored, the base is dropped from its own
-list, and a currency the API has no rate for is named at the foot of the board
-rather than dropped quietly.
+that is not a three letter code is named at the foot of the board, as is a code
+the API does not recognise. The base is dropped from its own list without
+comment, since a card reading "USD 1.0000" says nothing.
 
 Up to a dozen fit comfortably. The board measures the room it has and picks the
 grid from it, so the same settings fill a landscape screen four across and a
@@ -80,6 +81,23 @@ on the other.
 `amount` follows. On a `buys` board it is how much of the base, so the heading
 reads "100 USD". On a `costs` board it is how many units each figure is for, so
 the heading reads "JPY per 100".
+
+## When the rates cannot be reached
+
+A screen that has shown the board before keeps showing it, with the day it
+received those rates in the masthead, so a dropped connection costs nothing.
+
+`on_error` is about the other case: a screen with nothing cached, usually one
+that woke during an outage. `show` puts what went wrong on the screen, which is
+what an operator setting the app up wants. `skip` leaves the screen to whatever
+else is scheduled, which is what a lobby wants, since a message about an HTTP
+status is not something the room can act on.
+
+Either way the app keeps trying on its own timer and draws the board as soon as
+it can, without waiting for anyone to reboot the screen.
+
+Skipping works by not telling the player the app is ready. How a player fills
+that time is the player's business, not this app's.
 
 ## Where the numbers come from
 
