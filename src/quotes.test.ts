@@ -274,4 +274,31 @@ describe('priced the other way round, as a bureau hangs it', () => {
     expect(board.quotes).toHaveLength(0)
     expect(board.missing).toEqual(['USD'])
   })
+
+  test('and is not a quote the right way up either', () => {
+    // Rejected only when inverting, a zero or negative row was quoted as a
+    // real rate the other way round, and could be the latest one.
+    const board = boardFrom(
+      [row('USD', '2026-10-01', 1.1), row('USD', '2026-10-02', 0)],
+      ['USD'],
+      META,
+    )
+
+    expect(board.quotes[0]!.rate).toBeCloseTo(1.1, 10)
+    expect(board.quotes[0]!.history).toEqual([1.1])
+  })
+
+  test('a series of nothing but bad rates is reported missing', () => {
+    for (const options of [{}, { invert: true }]) {
+      const board = boardFrom(
+        [row('USD', '2026-10-01', 0), row('USD', '2026-10-02', -2)],
+        ['USD'],
+        META,
+        options,
+      )
+
+      expect(board.quotes).toHaveLength(0)
+      expect(board.missing).toEqual(['USD'])
+    }
+  })
 })

@@ -38,6 +38,7 @@ const FITS_IN_HEIGHT = 1.4
 const NAME_MIN_SIZE = 25
 const BASE_MIN_SIZE = 40
 const HEADING_MIN_SIZE = 25
+const VALUE_MIN_SIZE = 30
 
 export function element<T extends Element>(selector: string): T {
   const found = document.querySelector<T>(selector)
@@ -216,6 +217,10 @@ export function renderCredit(text: string): void {
  * today's.
  */
 export function renderNothing(): void {
+  // The heading goes too, unlike a failure that still has something to say.
+  // Standing aside means the screen carries nothing, and a board title alone
+  // on an empty screen is not standing aside.
+  element<HTMLElement>('[data-heading]').textContent = ''
   clearMasthead()
   element<HTMLElement>('[data-board]').removeAttribute('style')
   element<HTMLElement>('[data-board]').innerHTML = ''
@@ -240,6 +245,13 @@ export function fitDynamicText(): void {
   document
     .querySelectorAll<HTMLElement>('[data-fit-name]')
     .forEach((name) => fitToWidth(name, NAME_MIN_SIZE))
+
+  // The figure itself, which a large amount can make wider than the card that
+  // holds it: a billion units against the dong is eighteen digits once it is
+  // grouped, and the card was showing the first twelve of them.
+  document
+    .querySelectorAll<HTMLElement>('.rate-value')
+    .forEach((value) => fitToWidth(value, VALUE_MIN_SIZE))
 }
 
 /**

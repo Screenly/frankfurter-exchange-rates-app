@@ -179,8 +179,10 @@ export function boardFrom(
     }
 
     series.sort((one, other) => one.date.localeCompare(other.date))
-    // A rate of zero cannot be turned the other way up, and is not a rate.
-    const usable = series.filter((row) => !invert || row.rate > 0)
+    // A rate is a positive number in either direction. Zero cannot be turned
+    // the other way up, and nothing at or below it is a price of anything, so
+    // a row carrying one is dropped rather than quoted.
+    const usable = series.filter((row) => row.rate > 0)
     if (usable.length === 0) {
       missing.push(code)
       continue
