@@ -158,15 +158,17 @@ async function currencies(): Promise<Map<string, CurrencyMeta>> {
     console.warn('Could not fetch currency names', error)
   }
 
-  // Kept only if there is something to keep: an empty map remembered here
-  // would stop the next refresh from trying again once the network is back.
-  const fallback = new Map(
-    (cached ?? []).map((entry) => [entry.code, entry] as const),
-  )
-  if (fallback.size > 0) {
-    currencyMeta = fallback
-  }
-  return fallback
+  /*
+   * Borrowed for this attempt and not remembered, whatever is in it.
+   *
+   * This map decides which currencies exist: it rejects the base and filters
+   * the quotes. Keeping a snapshot taken before the last outage would hold
+   * that judgement for as long as the screen stays up, so a currency added to
+   * the settings afterwards would go on being refused long after the network
+   * came back. The next refresh asks again, which is one request every half
+   * hour against the chance of being wrong until someone reboots the screen.
+   */
+  return new Map((cached ?? []).map((entry) => [entry.code, entry] as const))
 }
 
 function draw({ settings, board, offline, receivedOn }: Shown): void {

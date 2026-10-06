@@ -58,8 +58,10 @@ describe('reading the currency settings', () => {
 
   test('what could not be read is reported as it was typed', () => {
     // Dropped silently, this leaves a board with a currency missing and
-    // nothing to say why. Three letter codes that are not currencies are a
-    // different matter: those reach the API and come back named as missing.
+    // nothing to say why. A three letter code that is not a currency is a
+    // different matter: it is shaped like one, so it is checked against the
+    // list the API publishes and reported missing without ever being asked
+    // for, which keeps one typo from failing the whole request.
     const read = parseCurrencyList('EUR, dollars')
 
     expect(read.codes).toEqual(['EUR'])
