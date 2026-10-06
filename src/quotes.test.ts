@@ -128,6 +128,20 @@ describe('reading the base currency', () => {
     expect(parseAmount('')).toBe(1)
   })
 
+  test('an amount too small to be written is not an amount', () => {
+    // A board set to this showed a masthead of 0 and cards of 0.0000000000
+    // while every rate behind them used the amount that had been set.
+    expect(parseAmount('1e-11')).toBe(1)
+    expect(parseAmount('0.00000001')).toBe(1)
+    // The floor itself is kept, and survives being written.
+    expect(parseAmount('0.0001')).toBe(0.0001)
+  })
+
+  test('nor is one large enough to stop being a rate', () => {
+    expect(parseAmount('1e12')).toBe(1)
+    expect(parseAmount('1000000000')).toBe(1000000000)
+  })
+
   test('a number with something after it is not a number', () => {
     // parseFloat reads the prefix and stops, so these quoted twelve and the
     // board gave no sign that the rest of the setting had been thrown away.

@@ -12,7 +12,7 @@ import {
 
 import {
   formatAmount,
-  formatShortDay,
+  formatReceived,
   formatWindow,
   isoDaysBefore,
 } from './format.js'
@@ -172,15 +172,13 @@ async function currencies(): Promise<Map<string, CurrencyMeta>> {
 function draw({ settings, board, offline, receivedOn }: Shown): void {
   const base = currencyMeta?.get(settings.base)
   const notes = [
-    board.missing.length ? `No rates for ${board.missing.join(', ')}` : '',
-    settings.unreadable.length
-      ? `Not a currency code: ${settings.unreadable.join(', ')}`
-      : '',
-    settings.omitted.length ? `No room for ${settings.omitted.join(', ')}` : '',
+    naming('No rates for', board.missing),
+    naming('Not a currency code:', settings.unreadable),
+    naming('No room for', settings.omitted),
   ].filter(Boolean)
   const asOf =
     offline && receivedOn
-      ? `Offline · last received ${formatShortDay(receivedOn, settings.display.locale)}`
+      ? `Offline · last received ${formatReceived(receivedOn, settings.display.locale)}`
       : `${formatWindow(settings.days)} trend`
 
   renderMasthead(
@@ -229,6 +227,27 @@ function ledeFor(settings: Settings): string {
  */
 function showsErrors(): boolean {
   return getSettingWithDefault<string>('on_error', 'show') !== 'skip'
+}
+
+/**
+ * How many of a list the footer names before it counts the rest.
+ *
+ * The footer does not shrink, so a line long enough to wrap takes the space
+ * from the board: paste all 165 codes into the setting and 153 of them would
+ * be read out underneath, costing the twelve above exactly what the cap on
+ * them was there to protect.
+ */
+const MOST_NAMED = 6
+
+function naming(label: string, codes: string[]): string {
+  if (codes.length === 0) {
+    return ''
+  }
+
+  const named = codes.slice(0, MOST_NAMED)
+  const rest = codes.length - named.length
+
+  return `${label} ${named.join(', ')}${rest > 0 ? ` and ${rest} more` : ''}`
 }
 
 function cacheKey(settings: Settings): string {

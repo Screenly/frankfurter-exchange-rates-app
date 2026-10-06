@@ -95,13 +95,30 @@ export function parseCurrencyCode(text: string): string | null {
 }
 
 /**
- * The amount each rate is for. Never zero or negative, and never the start of
- * something else: parseFloat reads "12usd" as twelve, which is a board quoting
- * amounts nobody asked for rather than the one unit it falls back to.
+ * The range an amount is allowed to take.
+ *
+ * Bounded rather than merely positive. Below a ten thousandth the idea stops
+ * meaning anything, and the figures stop surviving being written: a board set
+ * to 0.00000000001 showed a masthead of 0 and cards of 0.0000000000 while
+ * every rate behind them was worked out for the amount that had been set.
+ * Chasing that with decimals has no end, so the setting has a floor.
+ */
+const LEAST_AMOUNT = 0.0001
+const MOST_AMOUNT = 1e9
+
+/**
+ * The amount each rate is for. Never zero or negative, never the start of
+ * something else (parseFloat reads "12usd" as twelve, which is a board quoting
+ * amounts nobody asked for), and never so small or so large that the board
+ * cannot say what it is quoting. Anything else is the one unit it falls back
+ * to.
  */
 export function parseAmount(text: string): number {
   const amount = Number(text.trim())
-  return Number.isFinite(amount) && amount > 0 ? amount : 1
+  const usable =
+    Number.isFinite(amount) && amount >= LEAST_AMOUNT && amount <= MOST_AMOUNT
+
+  return usable ? amount : 1
 }
 
 /**

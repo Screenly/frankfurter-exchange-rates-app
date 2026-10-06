@@ -21,7 +21,7 @@ metadata:
     - '50.1109'
     - '8.6821'
   location: Frankfurt am Main
-  screen_name: Bureau board
+  screen_name: Lobby board
   hostname: dev-hostname
   screenly_version: development-server
   tags:

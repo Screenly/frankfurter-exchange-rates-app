@@ -349,11 +349,23 @@
    * and holding the quietest line on the board to the stricter ratio would
    * have meant lifting the tone everywhere it is used. Three points buys that.
    */
+  /*
+   * One line, whatever it has to say. It does not shrink, so a second line
+   * comes out of the board: ask for every currency at once and the three
+   * notices it can carry wrapped and took 30px off the cards above, which is
+   * the cost the cap on those cards exists to avoid. The notices name a few
+   * and count the rest, and the line itself is held to one.
+   */
   .credit {
+    height: 34px;
     flex: none;
+    overflow: hidden;
     color: var(--label-3);
     font-size: 25px;
+    line-height: 34px;
     text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   @media (orientation: portrait) {

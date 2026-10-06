@@ -6,6 +6,7 @@ import {
   formatChange,
   formatDay,
   formatRate,
+  formatReceived,
   formatShortDay,
   formatWindow,
   isoDaysBefore,
@@ -123,6 +124,13 @@ describe('writing a day', () => {
     }
 
     process.env.TZ = original
+  })
+
+  test('rates kept through an outage carry the year they arrived', () => {
+    // Nothing expires the cache, so a board cut off for a year would read
+    // "last received 5 Oct" and look like yesterday.
+    expect(formatReceived('2025-10-05', EN)).toBe('5 Oct 2025')
+    expect(formatReceived('2026-10-05', EN)).toBe('5 Oct 2026')
   })
 
   test('something that is not a day is passed through rather than guessed at', () => {

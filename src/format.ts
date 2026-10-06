@@ -93,6 +93,25 @@ export function formatDay(isoDate: string, locale: string): string {
   }).format(date)
 }
 
+/**
+ * "5 Oct 2025", for rates a screen is still showing while it is offline.
+ *
+ * With the year, unlike the chip on a card: nothing expires what is cached, so
+ * a board cut off for a year would otherwise say "last received 5 Oct" and
+ * read as yesterday.
+ */
+export function formatReceived(isoDate: string, locale: string): string {
+  const date = dayFrom(isoDate)
+  if (!date) return isoDate
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone: 'UTC',
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  }).format(date)
+}
+
 /** "2 Oct", for a currency whose source is a few days behind the rest. */
 export function formatShortDay(isoDate: string, locale: string): string {
   const date = dayFrom(isoDate)
