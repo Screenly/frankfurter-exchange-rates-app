@@ -3,11 +3,9 @@ name: Checks
 on:
   push:
     branches:
-      - development
       - master
   pull_request:
     branches:
-      - development
       - master
 
 jobs:
@@ -15,4 +13,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - uses: Screenly/edge-apps-actions/checks@v26.9.1
+      - uses: Screenly/edge-apps-actions/checks@v26.10.0

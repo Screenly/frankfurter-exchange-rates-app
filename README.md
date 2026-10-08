@@ -173,7 +173,45 @@ needs a browser is not: the rendering is checked by looking at it.
 
 ## Build and deploy
 
+Locally:
+
 ```bash
 bun run build
+screenly edge-app create --name frankfurter-exchange-rates-app --in-place
 bun run deploy
 ```
+
+In CI, `Update Edge App` deploys every push to `master` to stage, and a version
+tag such as `v26.10.0` to production. To release, tag the commit on `master`
+and push the tag. A tag whose commit is not on `master` is refused, and deleting
+a tag deploys nothing:
+
+```bash
+git tag v26.10.0
+git push origin v26.10.0
+```
+
+Versions are calendar based, `vYY.M.PATCH`: the year, the month without a
+leading zero, and a count of releases that month starting from 0. A second
+release in October 2026 is `v26.10.1`.
+
+Restrict the GitHub `production` environment to tags matching `v[0-9]*`
+(Settings, Environments, Deployment branches and tags) so only a tagged release
+can reach it.
+
+The Edge App id is passed to the action rather than written into
+`screenly.yml`, so this repository's manifest carries no `id`. It comes only
+from the repository variables `STAGE_EDGE_APP_ID` and `PRODUCTION_EDGE_APP_ID`,
+never a secret, so one environment's id cannot leak into the other's deploy.
+`SCREENLY_API_TOKEN` is a secret, needed by both environments.
+
+Setting up an environment for the first time:
+
+1. Create the `stage` and `production` GitHub environments, and give both
+   `SCREENLY_API_TOKEN`, as one repository secret or one per environment.
+2. Leave `STAGE_EDGE_APP_ID` and `PRODUCTION_EDGE_APP_ID` unset.
+3. Run `Initialize Edge App` by hand, once for stage and once for production.
+4. Copy the id each run prints into the matching variable.
+
+`Update Edge App` refuses to run without that variable, rather than deploying
+to the wrong app or creating a new one.
