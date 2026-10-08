@@ -51,14 +51,14 @@ export function rateRows(): RateRow[] {
 }
 
 /** The settings those rows answer, for a spec that needs to pass them. */
-export function mockSettings(appearance = 'dark'): Record<string, string> {
+export function mockSettings(theme = 'dark'): Record<string, string> {
   return {
     board_title: '',
     base_currency: BASE,
     quote_currencies: QUOTES.map((quote) => quote.code).join(','),
     amount: '1',
     trend_days: String(DAYS),
-    appearance,
+    theme,
   }
 }
 

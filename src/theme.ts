@@ -13,21 +13,10 @@ function isTheme(value: string): value is Theme {
 }
 
 /**
- * The app's own setting, or `auto` to take the tone from the account theme.
  * Anything unrecognised stays dark, which is the default a screen ships with.
  */
-export function resolveTheme(
-  setting: string,
-  accountTheme: string | undefined,
-): Theme {
+export function resolveTheme(setting: string): Theme {
   const chosen = setting.trim().toLowerCase()
 
-  if (isTheme(chosen)) {
-    return chosen
-  }
-  if (chosen === 'auto') {
-    return accountTheme === 'light' ? 'light' : 'dark'
-  }
-
-  return 'dark'
+  return isTheme(chosen) ? chosen : 'dark'
 }

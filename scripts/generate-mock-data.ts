@@ -33,7 +33,7 @@ settings:
   quote_currencies: EUR,GBP,JPY,CHF,CNY,AUD
   amount: '1'
   trend_days: '30'
-  appearance: dark
+  theme: dark
 `
 
 if (fs.existsSync(MOCK_DATA_PATH) && !process.argv.includes('--force')) {
