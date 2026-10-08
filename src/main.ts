@@ -1,7 +1,6 @@
 import './style.css'
 import '@screenly/edge-apps/components'
 import {
-  getSetting,
   getSettingWithDefault,
   readEdgeAppCache,
   setupErrorHandling,
@@ -131,8 +130,7 @@ function readSettings(): Settings {
 
 function applyTheme(): void {
   document.documentElement.dataset.theme = resolveTheme(
-    getSettingWithDefault<string>('appearance', 'dark'),
-    getSetting<string>('theme'),
+    getSettingWithDefault<string>('theme', 'dark'),
   )
 }
 

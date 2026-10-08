@@ -1,5 +1,7 @@
 # Frankfurter Exchange Rates
 
+![An exchange rate board pricing six currencies against the US dollar](screenshots/frankfurter-exchange-rates-app-1920x1080.webp)
+
 Daily currency exchange rates from central banks, for a hotel lobby, an airport
 hall or a bureau window.
 
@@ -44,7 +46,7 @@ something sensible before anything is set.
 | `quote_currencies` | Which currencies to show, in the order they should appear      | `EUR,GBP,JPY,CHF,CNY,AUD` |
 | `amount`           | Units each rate is for: of the base, or of the card's currency | `1`                       |
 | `trend_days`       | How far back the line goes: 7, 30, 90 days or a year           | `30`                      |
-| `appearance`       | `dark`, `light`, or `auto` to follow the account theme         | `dark`                    |
+| `theme`            | `dark` or `light`                                              | `dark`                    |
 | `on_error`         | `show` what went wrong, or `skip` and let the screen move on   | `show`                    |
 | `board_title`      | The line above the base currency                               | `Exchange rates`          |
 
