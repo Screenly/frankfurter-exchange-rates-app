@@ -1,6 +1,6 @@
 ---
 syntax: manifest_v1
-description: Daily currency exchange rates from central banks
+description: Daily exchange rates and trends from Frankfurter, the exchange rates and currency data API (frankfurter.dev)
 icon: https://playground.srly.io/edge-apps/icons/frankfurter-exchange-rates.svg
 author: Screenly, Inc.
 categories:
