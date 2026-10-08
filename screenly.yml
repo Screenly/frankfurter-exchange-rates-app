@@ -20,7 +20,7 @@ settings:
           against the currencies shown. On a board priced the other way round
           it is how many units of each currency the figure is for.
         type: number
-        display_order: 40
+        display_order: 3
       schema_version: 1
   theme:
     type: string
@@ -38,7 +38,7 @@ settings:
         - label: Light
           value: light
         type: select
-        display_order: 60
+        display_order: 6
       schema_version: 1
   base_currency:
     type: string
@@ -48,7 +48,7 @@ settings:
     help_text:
       properties:
         type: string
-        display_order: 10
+        display_order: 2
         help_text: |
           The currency everything else is priced against, as a three letter code,
           e.g. USD, EUR or JPY. The board reads "1 USD buys". Any of the 165
@@ -62,7 +62,8 @@ settings:
     help_text:
       properties:
         type: select
-        display_order: 20
+        advanced: true
+        display_order: 1
         help_text: |
           Which way round the board reads. A bureau quoting its own currency
           wants the second: "1 USD costs 155.20 JPY".
@@ -80,7 +81,7 @@ settings:
     help_text:
       properties:
         type: string
-        display_order: 30
+        display_order: 4
         help_text: |
           Three letter codes separated by commas, in the order they should appear,
           e.g. USD,GBP,JPY,CHF. Up to twelve fit on a screen; the board lays them
@@ -105,7 +106,7 @@ settings:
         - label: 1 year
           value: '365'
         type: select
-        display_order: 50
+        display_order: 5
       schema_version: 1
   on_error:
     type: string
@@ -115,7 +116,8 @@ settings:
     help_text:
       properties:
         type: select
-        display_order: 65
+        advanced: true
+        display_order: 2
         help_text: |
           What a screen does when it cannot reach the rates and has none saved.
           Standing aside gives the time to whatever else is scheduled instead
@@ -135,7 +137,7 @@ settings:
     help_text:
       properties:
         type: string
-        display_order: 70
+        display_order: 1
         help_text: |
           The small line above the base currency, e.g. "Today's rates" or the name
           of the bureau. Defaults to "Exchange rates".
