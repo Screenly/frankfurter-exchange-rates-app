@@ -4,3 +4,4 @@ dist/
 .DS_Store
 mock-data.yml
 instance.yml
+.vscode/

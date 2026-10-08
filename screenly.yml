@@ -1,6 +1,7 @@
 ---
 syntax: manifest_v1
 description: Daily currency exchange rates from central banks
+icon: https://playground.srly.io/edge-apps/icons/frankfurter-exchange-rates.svg
 author: Screenly, Inc.
 categories:
 - Finance
