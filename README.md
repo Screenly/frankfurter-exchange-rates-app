@@ -1,3 +1,5 @@
+[![Version](https://img.shields.io/github/v/release/Screenly/frankfurter-exchange-rates-app)](https://github.com/Screenly/frankfurter-exchange-rates-app/releases/latest)
+
 # Frankfurter Exchange Rates
 
 ![An exchange rate board pricing six currencies against the US dollar](screenshots/frankfurter-exchange-rates-app-1920x1080.webp)
