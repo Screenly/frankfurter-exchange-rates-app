@@ -1,3 +1,5 @@
+[![Version](https://img.shields.io/github/v/release/Screenly/frankfurter-exchange-rates-app)](https://github.com/Screenly/frankfurter-exchange-rates-app/releases/latest)
+
 # Frankfurter Exchange Rates
 
 ![An exchange rate board pricing six currencies against the US dollar](screenshots/frankfurter-exchange-rates-app-1920x1080.webp)
@@ -183,8 +185,9 @@ screenly edge-app create --name frankfurter-exchange-rates-app --in-place
 bun run deploy
 ```
 
-In CI, `Update Edge App` deploys every push to `master` to stage, and a version
-tag such as `v26.10.0` to production. To release, tag the commit on `master`
+In CI, `Update Edge App` starts a stage deploy on every push to `master`, and a
+production deploy for a version tag such as `v26.10.0`. Both wait for approval
+in the GitHub `stage` and `production` environments. To release, tag the commit on `master`
 and push the tag. A tag whose commit is not on `master` is refused, and deleting
 a tag deploys nothing:
 
